@@ -24,8 +24,8 @@ class _DayPageState extends State<DayPage> {
     _load();
   }
 
-  void _delete(RequestItem item) {
-    RequestStore().removeRequest(widget.date, item);
+  Future<void> _delete(RequestItem item) async {
+    await RequestStore().removeRequest(widget.date, item);
     _load();
   }
 
@@ -153,7 +153,7 @@ class _DayPageState extends State<DayPage> {
                             );
 
                             if (res != null && res.isNotEmpty) {
-                              RequestStore().addContractor(res);
+                              await RequestStore().addContractor(res);
                               setState(() => contractor = res);
                             }
                           } else {
@@ -338,7 +338,7 @@ class _DayPageState extends State<DayPage> {
                       const SizedBox(height: 16),
 
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final title = titleCtrl.text.isNotEmpty
                               ? titleCtrl.text
                               : (contractor.isNotEmpty ? contractor : 'Заявка');
@@ -380,10 +380,11 @@ class _DayPageState extends State<DayPage> {
                               .getRequests(widget.date)
                               .any((r) => r.id == item.id);
                           if (existing) {
-                            RequestStore().removeRequest(widget.date, item);
+                            await RequestStore().removeRequest(widget.date, item);
                           }
-                          RequestStore().addRequest(widget.date, updated);
+                          await RequestStore().addRequest(widget.date, updated);
 
+                          if (!mounted) return;
                           Navigator.of(ctx).pop();
                           _load();
                         },
@@ -564,7 +565,7 @@ class _DayPageState extends State<DayPage> {
                                         color: Colors.redAccent,
                                       ),
                                       tooltip: 'Удалить',
-                                      onPressed: () => _delete(r),
+                                      onPressed: () async => _delete(r),
                                     ),
                                   ],
                                 ),

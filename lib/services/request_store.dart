@@ -17,8 +17,11 @@ class RequestStore {
   static final RequestStore _instance = RequestStore._privateConstructor();
   factory RequestStore() => _instance;
 
+  bool _initialized = false;
+
   /// Инициализация Hive + синхронизация из Firestore (без дублирования)
   Future<void> init() async {
+    if (_initialized) return;
     await Hive.initFlutter();
 
     // Безопасная регистрация адаптеров — чтобы не получить HiveError при повторной инициализации
@@ -32,6 +35,7 @@ class RequestStore {
     try {
       _requestBox = await Hive.openBox(requestBoxName);
       _contractorBox = await Hive.openBox<Contractor>(contractorBoxName);
+      _initialized = true;
     } catch (e, st) {
       print('RequestStore.init(): failed to open boxes: $e\n$st');
       rethrow;
@@ -64,7 +68,8 @@ class RequestStore {
           isDone: data['isDone'] ?? false,
         );
 
-        final dateKey = data['date'] ?? '';
+        final dateKey = _normalizeDateKey(data['date']);
+        if (dateKey == null) continue;
         // Получаем существующий список (безопасно приводим тип)
         final existingRaw = _requestBox.get(dateKey);
         final existing = (existingRaw is List<RequestItem>)
@@ -109,6 +114,23 @@ class RequestStore {
   }
 
   String _keyFor(DateTime date) => '${date.year}-${date.month}-${date.day}';
+
+  String? _normalizeDateKey(dynamic source) {
+    if (source is String && source.isNotEmpty) {
+      return source;
+    }
+
+    if (source is Timestamp) {
+      final d = source.toDate();
+      return _keyFor(DateTime(d.year, d.month, d.day));
+    }
+
+    if (source is DateTime) {
+      return _keyFor(DateTime(source.year, source.month, source.day));
+    }
+
+    return null;
+  }
 
   List<RequestItem> getRequests(DateTime date) {
     // Возвращаем список заявок для даты (безопасно приводим тип)
@@ -186,8 +208,12 @@ class RequestStore {
 
   Future<void> removeRequest(DateTime date, RequestItem item) async {
     final k = _keyFor(date);
-    final list =
-        _requestBox.get(k, defaultValue: <RequestItem>[]) ?? <RequestItem>[];
+    final raw = _requestBox.get(k);
+    final list = (raw is List<RequestItem>)
+        ? raw
+        : (raw is List)
+        ? raw.whereType<RequestItem>().toList()
+        : <RequestItem>[];
     final updated = list.where((r) => r.id != item.id).toList();
     await _requestBox.put(k, updated);
 
