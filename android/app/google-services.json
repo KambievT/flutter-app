@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "733227168153",
+    "project_id": "neiropodarok",
+    "storage_bucket": "neiropodarok.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733227168153:android:6c93cf50a9b398f516e308",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6RWKBSHYAadoTVFHhU3xPaEasia0LLCc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
