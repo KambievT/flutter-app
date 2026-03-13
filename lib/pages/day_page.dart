@@ -26,6 +26,7 @@ class _DayPageState extends State<DayPage> {
 
   Future<void> _delete(RequestItem item) async {
     await RequestStore().removeRequest(widget.date, item);
+    if (!mounted) return;
     _load();
   }
 
@@ -43,6 +44,7 @@ class _DayPageState extends State<DayPage> {
     );
 
     await RequestStore().addRequest(widget.date, updated);
+    if (!mounted) return;
     _load();
   }
 
