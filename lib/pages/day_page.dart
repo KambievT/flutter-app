@@ -80,6 +80,10 @@ class _DayPageState extends State<DayPage> {
           builder: (c, setState) {
             final mq = MediaQuery.of(ctx).viewInsets.bottom;
             final contractors = RequestStore().getContractors();
+            final currentContractorValue =
+                contractor.isEmpty || contractors.contains(contractor)
+                ? contractor
+                : '';
 
             return Padding(
               padding: EdgeInsets.only(bottom: mq),
@@ -129,12 +133,18 @@ class _DayPageState extends State<DayPage> {
                               child: Text(cName),
                             ),
                           ),
+                          if (contractor.isNotEmpty &&
+                              !contractors.contains(contractor))
+                            DropdownMenuItem(
+                              value: contractor,
+                              child: Text(contractor),
+                            ),
                           const DropdownMenuItem(
                             value: '__new__',
                             child: Text('Добавить нового подрядчика...'),
                           ),
                         ],
-                        value: contractor.isEmpty ? '' : contractor,
+                        value: currentContractorValue,
                         onChanged: (v) async {
                           if (v == '__new__') {
                             final res = await showDialog<String>(
