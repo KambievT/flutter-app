@@ -586,16 +586,13 @@ class _DayPageState extends State<DayPage> {
                                       onPressed: () => _openEditor(item: r),
                                     ),
 
-                                    Row(
-                                      children: [
-                                        const Text('Вып.'),
-                                        Checkbox(
-                                          value: r.isDone,
-                                          onChanged: (v) async {
-                                            await _toggleDone(r, v ?? false);
-                                          },
-                                        ),
-                                      ],
+                                    const SizedBox(width: 4),
+                                    const Text('Вып.'),
+                                    Checkbox(
+                                      value: r.isDone,
+                                      onChanged: (v) async {
+                                        await _toggleDone(r, v ?? false);
+                                      },
                                     ),
 
                                     IconButton(
